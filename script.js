@@ -34,9 +34,15 @@ const gameController = (() => {
 
     const getCurrentPlayer = () => currentPlayer
 
-    const updateName = (p1name, p2name) => {
+    const updateNames = (p1name, p2name) => {
         players[0].name = p1name
         players[1].name = p2name
+        if (p1name == "") {
+            players[0].name = "Player 1"
+        }
+        if (p2name == "") {
+            players[1].name = "Player 2"
+        }
     }
 
     const getNames = () => [players[0].name, players[1].name]
@@ -91,7 +97,7 @@ const gameController = (() => {
         changeTurn()
     }
 
-    return {playRound, updateName, getScores, getNames, resetScores, getCurrentPlayer}
+    return {playRound, updateNames, getScores, getNames, resetScores, getCurrentPlayer}
 })();
 
 const displayController = (() => {
@@ -100,7 +106,7 @@ const displayController = (() => {
     const checkStart = () => start
     const activateStart = () => {
         start = true
-        gameController.updateName(document.getElementById("p1").value, document.getElementById("p2").value)
+        gameController.updateNames(document.getElementById("p1").value, document.getElementById("p2").value)
         updateScores()
     }
 
@@ -115,6 +121,7 @@ const displayController = (() => {
         start = false
         gameboardController.clear()
         gameController.resetScores()
+        gameController.updateNames("Player 1","Player 2")
         updateScores()
         document.getElementById("p1").value = ""
         document.getElementById("p2").value = ""
