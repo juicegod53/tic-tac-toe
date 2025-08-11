@@ -69,10 +69,6 @@ const gameController = (() => {
                 draw = false
             }
         }
-        console.log(filled)
-        if (draw) {
-            return "Draw"
-        }
 
         for (let i = 0; i < wins.length; i++) {
             let found = true;
@@ -86,6 +82,11 @@ const gameController = (() => {
                 return "Win"
             }
         }
+        
+        if (draw) {
+            return "Draw"
+        }
+
         return "Unfinished"
     }
 
