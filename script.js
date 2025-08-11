@@ -16,8 +16,8 @@ const gameboardController = (() => {
 })();
 
 const gameController = (() => {
-    let playerOneName = "playerOne"
-    let playerTwoName = "playerTwo"
+    let playerOneName = "Player 1"
+    let playerTwoName = "Player 2"
 
     const players = [{name: playerOneName, value: 'X'},
                      {name: playerTwoName, value: 'O'}]
@@ -33,6 +33,11 @@ const gameController = (() => {
     }
 
     const getCurrentPlayer = () => currentPlayer
+
+    const updateName = (p1name, p2name) => {
+        players[0].name = p1name
+        players[1].name = p2name
+    }
 
     const checkState = (player) => {
         const wins = [[0,3,6],[1,4,7],[2,5,8],
@@ -76,21 +81,53 @@ const gameController = (() => {
         const result = checkState(getCurrentPlayer())
         if (result == "Win") {
             console.log(getCurrentPlayer().name + " wins!")
-            gameboardController.clear()
+
         } else if (result == "Draw") {
             console.log("It's a draw!")
-            gameboardController.clear()
+        }
+
+        if (result != "Unfinished") {
+            document.getElementById("board").style.pointerEvents = "none"
+            document.getElementById("display").style.display = "none"
+
+            const next = document.createElement("button")
+            next.innerText = "Next Game"
+            next.addEventListener("click", function() {
+                gameboardController.clear()
+                displayController.update()
+                document.getElementById("board").style.pointerEvents = "auto"
+                document.getElementById("display").style.display = "block"
+                next.remove()
+            })
+            document.getElementById("container").appendChild(next)
         }
 
         changeTurn()
     }
 
-    return {playRound}
+    return {playRound, updateName}
 })();
 
 const displayController = (() => {
+    let start = false
+
+    const checkStart = () => start
+    const activateStart = () => {
+        start = true
+        gameController.updateName(document.getElementById("p1").value, document.getElementById("p2").value)
+    }
+
+    const resetGame = () => {
+        start = false
+        gameboardController.clear()
+        document.getElementById("p1").value = ""
+        document.getElementById("p2").value = ""
+        generate()
+    }
+
     const boardDisplay = document.getElementById("board")
     const generate = () => {
+        boardDisplay.innerHTML = "";
         for (let i = 0; i < 9; i++) {
             const cell = document.createElement("div")
             cell.id = i
@@ -99,6 +136,9 @@ const displayController = (() => {
             })
             boardDisplay.appendChild(cell)
         }
+
+        document.getElementById("start").addEventListener("click", activateStart)
+        document.getElementById("reset").addEventListener("click", resetGame)
     }
 
     const update = () => {
@@ -115,13 +155,13 @@ const displayController = (() => {
 
     const input = (target) => {
         const gameboard = gameboardController.fetch()
-        if (gameboard.includes(parseInt(target.id))) {
+        if (gameboard.includes(parseInt(target.id)) && checkStart() == true) {
             gameController.playRound(target.id)
             update()
         }
     }
-    
+
     generate()
 
-    return {generate, update, input}
+    return {update}
 })();
