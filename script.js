@@ -19,8 +19,8 @@ const gameController = (() => {
     let playerOneName = "Player 1"
     let playerTwoName = "Player 2"
 
-    const players = [{name: playerOneName, value: 'X'},
-                     {name: playerTwoName, value: 'O'}]
+    const players = [{name: playerOneName, value: 'X', score: 0},
+                     {name: playerTwoName, value: 'O', score: 0}]
 
     let currentPlayer = players[0]
 
@@ -37,6 +37,13 @@ const gameController = (() => {
     const updateName = (p1name, p2name) => {
         players[0].name = p1name
         players[1].name = p2name
+    }
+
+    const getNames = () => [players[0].name, players[1].name]
+    const getScores = () => [players[0].score, players[1].score]
+    const resetScores = () => {
+        players[0].score = 0
+        players[1].score = 0
     }
 
     const checkState = (player) => {
@@ -80,16 +87,16 @@ const gameController = (() => {
 
         const result = checkState(getCurrentPlayer())
         if (result == "Win") {
-            console.log(getCurrentPlayer().name + " wins!")
+            document.getElementById("result").innerText = getCurrentPlayer().name + " wins!"
+            getCurrentPlayer().score += 1
 
         } else if (result == "Draw") {
-            console.log("It's a draw!")
+            document.getElementById("result").innerText = "It's a draw!"
         }
 
         if (result != "Unfinished") {
             document.getElementById("board").style.pointerEvents = "none"
             document.getElementById("display").style.display = "none"
-
             const next = document.createElement("button")
             next.innerText = "Next Game"
             next.addEventListener("click", function() {
@@ -97,6 +104,8 @@ const gameController = (() => {
                 displayController.update()
                 document.getElementById("board").style.pointerEvents = "auto"
                 document.getElementById("display").style.display = "block"
+                displayController.updateScores()
+                document.getElementById("result").innerText = ""
                 next.remove()
             })
             document.getElementById("container").appendChild(next)
@@ -105,7 +114,7 @@ const gameController = (() => {
         changeTurn()
     }
 
-    return {playRound, updateName}
+    return {playRound, updateName, getScores, getNames, resetScores}
 })();
 
 const displayController = (() => {
@@ -115,11 +124,21 @@ const displayController = (() => {
     const activateStart = () => {
         start = true
         gameController.updateName(document.getElementById("p1").value, document.getElementById("p2").value)
+        updateScores()
+    }
+
+    const updateScores = () => {
+        const scores = gameController.getScores()
+        const names = gameController.getNames()
+        document.getElementById("p1score").innerText = names[0] + "'s score: " + scores[0]
+        document.getElementById("p2score").innerText = names[1] + "'s score: " + scores[1]
     }
 
     const resetGame = () => {
         start = false
         gameboardController.clear()
+        gameController.resetScores()
+        updateScores()
         document.getElementById("p1").value = ""
         document.getElementById("p2").value = ""
         generate()
@@ -163,5 +182,5 @@ const displayController = (() => {
 
     generate()
 
-    return {update}
+    return {update, updateScores}
 })();
