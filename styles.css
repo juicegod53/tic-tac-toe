@@ -64,6 +64,7 @@ input {
     border: none;
     border-bottom: 2px solid white;
     background-color: rgb(1, 7, 20);
+    outline: none;
 }
 
 #p1score, #p2score {
@@ -80,4 +81,13 @@ input {
     padding: 15px 50px;
     font-size: 20px;
     background-color: rgb(1, 7, 20)
+}
+
+button {
+    border: 2px solid grey;
+    transition: 0.2s;
+}
+
+button:hover {
+    border: 2px solid rgb(85, 85, 85);
 }
