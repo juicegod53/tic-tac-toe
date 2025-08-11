@@ -1,17 +1,15 @@
 const gameboardController = (() => {
-    const gameboard = [1,2,3,4,5,6,7,8,9]
+    const gameboard = [0,1,2,3,4,5,6,7,8,]
 
     const fetch = () => gameboard;
 
     const update = (player, target) => {
-        if (typeof(gameboard[target]) == "number") {
-            gameboard[target] = player.value
-        }
+        gameboard[target] = player.value
     }
 
     const clear = () => {
         gameboard.length = 0
-        gameboard.push(1,2,3,4,5,6,7,8,9)
+        gameboard.push(0,1,2,3,4,5,6,7,8)
     }
 
     return {fetch, update, clear};
@@ -37,9 +35,9 @@ const gameController = (() => {
     const getCurrentPlayer = () => currentPlayer
 
     const checkState = (player) => {
-        const wins = [[1,4,7],[2,5,8],[3,6,9],
-                        [1,2,3],[4,5,6],[7,8,9],
-                        [1,5,9],[3,5,7]];
+        const wins = [[0,3,6],[1,4,7],[2,5,8],
+                        [0,1,2],[3,4,5],[6,7,8],
+                        [0,4,8],[2,4,6]];
         let filled = [];
 
         const gameboard = gameboardController.fetch()
@@ -47,7 +45,7 @@ const gameController = (() => {
         let draw = true;
         for (let i = 0; i < gameboard.length; i++) {
             if (gameboard[i] == player.value) {
-                filled.push(i+1)
+                filled.push(i)
             }
             if (typeof(gameboard[i]) == "number") {
                 draw = false
@@ -74,7 +72,6 @@ const gameController = (() => {
 
     const playRound = (target) => {
         gameboardController.update(getCurrentPlayer(), target)
-        console.log(gameboardController.fetch())
 
         const result = checkState(getCurrentPlayer())
         if (result == "Win") {
@@ -89,4 +86,42 @@ const gameController = (() => {
     }
 
     return {playRound}
+})();
+
+const displayController = (() => {
+    const boardDisplay = document.getElementById("board")
+    const generate = () => {
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement("div")
+            cell.id = i
+            cell.addEventListener("click", function(e) {
+                input(e.target)
+            })
+            boardDisplay.appendChild(cell)
+        }
+    }
+
+    const update = () => {
+        const gameboard = gameboardController.fetch()
+
+        for (let i = 0; i < 9; i++) {
+            if (typeof(gameboard[i]) != "number") {
+                boardDisplay.children[i].innerText = gameboard[i]
+            } else {
+                boardDisplay.children[i].innerText = ""
+            }
+        }
+    }
+
+    const input = (target) => {
+        const gameboard = gameboardController.fetch()
+        if (gameboard.includes(parseInt(target.id))) {
+            gameController.playRound(target.id)
+            update()
+        }
+    }
+    
+    generate()
+
+    return {generate, update, input}
 })();
