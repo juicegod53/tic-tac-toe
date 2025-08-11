@@ -86,35 +86,12 @@ const gameController = (() => {
         gameboardController.update(getCurrentPlayer(), target)
 
         const result = checkState(getCurrentPlayer())
-        if (result == "Win") {
-            document.getElementById("result").innerText = getCurrentPlayer().name + " wins!"
-            getCurrentPlayer().score += 1
-
-        } else if (result == "Draw") {
-            document.getElementById("result").innerText = "It's a draw!"
-        }
-
-        if (result != "Unfinished") {
-            document.getElementById("board").style.pointerEvents = "none"
-            document.getElementById("display").style.display = "none"
-            const next = document.createElement("button")
-            next.innerText = "Next Game"
-            next.addEventListener("click", function() {
-                gameboardController.clear()
-                displayController.update()
-                document.getElementById("board").style.pointerEvents = "auto"
-                document.getElementById("display").style.display = "block"
-                displayController.updateScores()
-                document.getElementById("result").innerText = ""
-                next.remove()
-            })
-            document.getElementById("container").appendChild(next)
-        }
+        displayController.displayResult(result)
 
         changeTurn()
     }
 
-    return {playRound, updateName, getScores, getNames, resetScores}
+    return {playRound, updateName, getScores, getNames, resetScores, getCurrentPlayer}
 })();
 
 const displayController = (() => {
@@ -142,6 +119,38 @@ const displayController = (() => {
         document.getElementById("p1").value = ""
         document.getElementById("p2").value = ""
         generate()
+    }
+
+    const displayResult = (result) => {
+        if (result == "Win") {
+            document.getElementById("result").innerText = gameController.getCurrentPlayer().name + " wins!"
+            gameController.getCurrentPlayer().score += 1
+
+        } else if (result == "Draw") {
+            document.getElementById("result").innerText = "It's a draw!"
+        }
+
+        if (result != "Unfinished") {
+            document.getElementById("board").style.pointerEvents = "none"
+            document.getElementById("display").style.display = "none"
+
+            const next = document.createElement("button")
+            next.innerText = "Next Game"
+
+            next.addEventListener("click", function() {
+                gameboardController.clear()
+                update()
+                updateScores()
+
+                document.getElementById("board").style.pointerEvents = "auto"
+                document.getElementById("display").style.display = "block"
+                document.getElementById("result").innerText = ""
+
+                next.remove()
+            })
+
+            document.getElementById("container").appendChild(next)
+        }
     }
 
     const boardDisplay = document.getElementById("board")
@@ -182,5 +191,5 @@ const displayController = (() => {
 
     generate()
 
-    return {update, updateScores}
+    return {update, updateScores, displayResult}
 })();
