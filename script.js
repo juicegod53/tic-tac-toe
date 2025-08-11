@@ -69,6 +69,7 @@ const gameController = (() => {
                 draw = false
             }
         }
+        console.log(filled)
         if (draw) {
             return "Draw"
         }
@@ -142,6 +143,7 @@ const displayController = (() => {
             document.getElementById("display").style.display = "none"
 
             const next = document.createElement("button")
+            next.setAttribute("id", "next")
             next.innerText = "Next Game"
 
             next.addEventListener("click", function() {
@@ -150,13 +152,13 @@ const displayController = (() => {
                 updateScores()
 
                 document.getElementById("board").style.pointerEvents = "auto"
-                document.getElementById("display").style.display = "block"
+                document.getElementById("display").style.display = "flex"
                 document.getElementById("result").innerText = ""
 
                 next.remove()
             })
 
-            document.getElementById("container").appendChild(next)
+            document.body.appendChild(next)
         }
     }
 
